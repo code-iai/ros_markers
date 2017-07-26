@@ -39,6 +39,28 @@ ChilitagsDetector::ChilitagsDetector(ros::NodeHandle& rosNode,
     if(tagSize!=USE_CHILITAGS_DEFAULT_PARAM)
         chilitags3d.setDefaultTagSize(tagSize); // use specified value
 
+  //TODO: Read these values from a parameter or yaml file
+  cv::Mat diag = cv::Mat::eye(7,7, CV_32F );
+  diag.at<float>(0,0) = 1e-1;
+  diag.at<float>(1,1) = 1e-1;
+  diag.at<float>(2,2) = 1e-1;
+  diag.at<float>(3,3) = 1e-1;
+  diag.at<float>(4,4) = 1e-1;
+  diag.at<float>(5,5) = 1e-1;
+  diag.at<float>(6,6) = 1e-1;
+
+  cv::Mat diag2 = cv::Mat::eye(7,7, CV_32F );
+  diag2.at<float>(0,0) = 1e-4;
+  diag2.at<float>(1,1) = 1e-4;
+  diag2.at<float>(2,2) = 1e-4;
+  diag2.at<float>(3,3) = 1e-4;
+  diag2.at<float>(4,4) = 1e-4;
+  diag2.at<float>(5,5) = 1e-4;
+  diag2.at<float>(6,6) = 1e-4;
+
+  //Set values for the kalman filter to be more responsive (less filtering)
+  chilitags3d.setFilterProcessNoiseCovariance(diag);
+  chilitags3d.setFilterObservationNoiseCovariance(diag2);
 }
 
 
@@ -105,9 +127,10 @@ void ChilitagsDetector::findMarkers(const sensor_msgs::ImageConstPtr& msg,
         setROSTransform(kv.second, 
                         transform);
 
+
         br.sendTransform(
                 tf::StampedTransform(transform, 
-                                        ros::Time::now() + ros::Duration(TRANSFORM_FUTURE_DATING), 
+                                        msg->header.stamp + ros::Duration(TRANSFORM_FUTURE_DATING),
                                         cameramodel.tfFrame(),
                                         kv.first));
     }
