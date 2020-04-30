@@ -56,7 +56,5 @@ void ChilitagsNodelet::onInit()
 }
 
 // Register this plugin with pluginlib.  Names must match nodelet_chilitags.xml.
-//
-// parameters are: package, class name, class type, base class type
-PLUGINLIB_DECLARE_CLASS(ros_markers, detector,
-                        ChilitagsNodelet, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(ChilitagsNodelet, nodelet::Nodelet);
+
